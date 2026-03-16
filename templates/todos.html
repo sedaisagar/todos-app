@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Todo-s</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #e9ecef;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .todo-card {
+            background: #f0f2f5;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 780px;
+            width: 100%;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .todo-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a56db;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .todo-title .bi {
+            font-size: 2rem;
+        }
+
+        .add-input-wrapper {
+            background: #fff;
+            border-radius: 12px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .add-input-wrapper input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 0.95rem;
+            color: #6c757d;
+            background: transparent;
+        }
+
+        .add-input-wrapper input::placeholder {
+            color: #adb5bd;
+        }
+
+        .btn-add {
+            background-color: #1a56db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            font-size: 0.85rem;
+        }
+
+        .btn-add:hover {
+            background-color: #1648c4;
+            color: white;
+        }
+
+        .calendar-icon {
+            color: #1a56db;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        hr.divider {
+            border: none;
+            border-top: 1.5px solid #d0d5dd;
+            margin: 24px 0 16px;
+        }
+
+        .filter-sort-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .filter-sort-row label {
+            font-size: 0.88rem;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .filter-sort-row select {
+            border: 1.5px solid #ced4da;
+            border-radius: 8px;
+            padding: 5px 30px 5px 10px;
+            font-size: 0.88rem;
+            color: #343a40;
+            background-color: #fff;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%236c757d' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            cursor: pointer;
+        }
+
+        .sort-icon-btn {
+            background: none;
+            border: none;
+            color: #1a56db;
+            font-size: 1.2rem;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        /* Todo items */
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 4px;
+            border-bottom: 1px solid #e2e6ea;
+            position: relative;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-item .form-check-input {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #adb5bd;
+            border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .todo-item .form-check-input:checked {
+            background-color: #1a56db;
+            border-color: #1a56db;
+        }
+
+        .todo-text {
+            flex: 1;
+            margin-left: 14px;
+            font-size: 0.97rem;
+            color: #212529;
+        }
+
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: #adb5bd;
+        }
+
+        .due-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1.5px solid #f6a623;
+            border-radius: 8px;
+            padding: 3px 12px;
+            font-size: 0.8rem;
+            color: #e67e00;
+            background: transparent;
+            margin-right: 12px;
+            white-space: nowrap;
+        }
+
+        .due-badge .bi {
+            color: #f6a623;
+        }
+
+        .todo-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #adb5bd;
+            font-size: 0.78rem;
+            white-space: nowrap;
+        }
+
+        .todo-meta .bi-info-circle {
+            font-size: 0.85rem;
+            color: #adb5bd;
+        }
+
+        .todo-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 10px;
+        }
+
+        .btn-edit {
+            background: none;
+            border: none;
+            color: #1a56db;
+            font-size: 0.95rem;
+            padding: 2px 4px;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 0.95rem;
+            padding: 2px 4px;
+            cursor: pointer;
+        }
+
+        .btn-edit:hover {
+            color: #1648c4;
+        }
+
+        .btn-delete:hover {
+            color: #b02a37;
+        }
+
+        /* Date picker hidden input */
+        #dueDatePicker {
+            display: none;
+        }
+
+        /* Inline edit input */
+        .edit-input {
+            border: 1.5px solid #1a56db;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="todo-card">
+        <!-- Title -->
+        <div class="text-center mb-4">
+            <h1 class="todo-title">
+                <i class="bi bi-check2-square me-2"></i>My Todo-s
+            </h1>
+        </div>
+
+        <!-- Add Input -->
+        <div class="add-input-wrapper mb-2">
+            <input type="text" id="newTodoInput" placeholder="Add new..." />
+            <input type="date" id="dueDatePicker" />
+            <i class="bi bi-calendar3 calendar-icon" title="Pick due date"
+                onclick="document.getElementById('dueDatePicker').showPicker()"></i>
+            <button class="btn btn-add" onclick="addTodo()">ADD</button>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Filter & Sort -->
+        <div class="filter-sort-row">
+            <label>Filter</label>
+            <select id="filterSelect" onchange="renderTodos()">
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="due">Has Due Date</option>
+            </select>
+            <label>Sort</label>
+            <select id="sortSelect" onchange="renderTodos()">
+                <option value="added">Added date</option>
+                <option value="due">Due date</option>
+                <option value="name">Name</option>
+            </select>
+            <button class="sort-icon-btn" title="Toggle order" onclick="toggleOrder()">
+                <i class="bi bi-sort-down" id="sortIcon"></i>
+            </button>
+        </div>
+
+        <!-- Todo List -->
+        <div id="todoList"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let todos = [
+            { id: 1, text: 'Buy groceries for next week', completed: true, dueDate: '', addedDate: '2020-06-28' },
+            { id: 2, text: 'Renew car insurance', completed: false, dueDate: '2020-06-28', addedDate: '2020-06-28' },
+            { id: 3, text: 'Sign up for online course', completed: false, dueDate: '', addedDate: '2020-06-28' },
+        ];
+        let nextId = 4;
+        let sortAsc = true;
+        let editingId = null;
+
+        function formatDate( dateStr ) {
+            if ( !dateStr ) return '';
+            const d = new Date( dateStr + 'T00:00:00' );
+            const day = d.getDate();
+            const suffix = ['th', 'st', 'nd', 'rd'][( day % 10 > 3 || Math.floor( day / 10 ) === 1 ) ? 0 : day % 10] || 'th';
+            const month = d.toLocaleString( 'en-GB', { month: 'short' } );
+            const year = d.getFullYear();
+            return `${day}${suffix} ${month} ${year}`;
+        }
+
+        function toggleOrder() {
+            sortAsc = !sortAsc;
+            document.getElementById( 'sortIcon' ).className = sortAsc ? 'bi bi-sort-down' : 'bi bi-sort-up';
+            renderTodos();
+        }
+
+        function addTodo() {
+            const input = document.getElementById( 'newTodoInput' );
+            const dateInput = document.getElementById( 'dueDatePicker' );
+            const text = input.value.trim();
+            if ( !text ) return;
+            todos.push( {
+                id: nextId++,
+                text,
+                completed: false,
+                dueDate: dateInput.value,
+                addedDate: new Date().toISOString().split( 'T' )[0]
+            } );
+            input.value = '';
+            dateInput.value = '';
+            renderTodos();
+        }
+
+        function deleteTodo( id ) {
+            todos = todos.filter( t => t.id !== id );
+            renderTodos();
+        }
+
+        function toggleComplete( id ) {
+            const t = todos.find( t => t.id === id );
+            if ( t ) t.completed = !t.completed;
+            renderTodos();
+        }
+
+        function startEdit( id ) {
+            editingId = id;
+            renderTodos();
+            const input = document.getElementById( `edit-${id}` );
+            if ( input ) { input.focus(); input.select(); }
+        }
+
+        function saveEdit( id ) {
+            const input = document.getElementById( `edit-${id}` );
+            if ( input ) {
+                const t = todos.find( t => t.id === id );
+                if ( t ) t.text = input.value.trim() || t.text;
+            }
+            editingId = null;
+            renderTodos();
+        }
+
+        function renderTodos() {
+            const filter = document.getElementById( 'filterSelect' ).value;
+            const sort = document.getElementById( 'sortSelect' ).value;
+
+            let list = [...todos];
+
+            // Filter
+            if ( filter === 'active' ) list = list.filter( t => !t.completed );
+            else if ( filter === 'completed' ) list = list.filter( t => t.completed );
+            else if ( filter === 'due' ) list = list.filter( t => t.dueDate );
+
+            // Sort
+            list.sort( ( a, b ) => {
+                let va, vb;
+                if ( sort === 'added' ) { va = a.addedDate; vb = b.addedDate; }
+                else if ( sort === 'due' ) { va = a.dueDate || '9999'; vb = b.dueDate || '9999'; }
+                else { va = a.text.toLowerCase(); vb = b.text.toLowerCase(); }
+                return sortAsc ? va.localeCompare( vb ) : vb.localeCompare( va );
+            } );
+
+            const container = document.getElementById( 'todoList' );
+            container.innerHTML = list.map( todo => `
+        <div class="todo-item">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            ${todo.completed ? 'checked' : ''}
+            onchange="toggleComplete(${todo.id})"
+          />
+          <div class="todo-text ${todo.completed ? 'completed' : ''}">
+            ${editingId === todo.id
+                    ? `<input class="edit-input" id="edit-${todo.id}" value="${todo.text.replace( /"/g, '&quot;' )}"
+                  onblur="saveEdit(${todo.id})"
+                  onkeydown="if(event.key==='Enter') saveEdit(${todo.id})" />`
+                    : todo.text
+                }
+          </div>
+          ${todo.dueDate && !todo.completed
+                    ? `<span class="due-badge"><i class="bi bi-hourglass-split"></i>${formatDate( todo.dueDate )}</span>`
+                    : ''}
+          <div class="todo-actions">
+            ${!todo.completed
+                    ? `<button class="btn-edit" title="Edit" onclick="startEdit(${todo.id})"><i class="bi bi-pencil"></i></button>`
+                    : ''}
+            <button class="btn-delete" title="Delete" onclick="deleteTodo(${todo.id})"><i class="bi bi-trash"></i></button>
+          </div>
+          <div class="todo-meta">
+            <i class="bi bi-info-circle" title="Added: ${formatDate( todo.addedDate )}"></i>
+            ${formatDate( todo.addedDate )}
+          </div>
+        </div>
+      `).join( '' );
+        }
+
+        // Allow Enter key to add todo
+        document.getElementById( 'newTodoInput' ).addEventListener( 'keydown', e => {
+            if ( e.key === 'Enter' ) addTodo();
+        } );
+
+        renderTodos();
+    </script>
+</body>
+
+</html>
