@@ -294,11 +294,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let todos = [
-            { id: 1, text: 'Buy groceries for next week', completed: true, dueDate: '', addedDate: '2020-06-28' },
-            { id: 2, text: 'Renew car insurance', completed: false, dueDate: '2020-06-28', addedDate: '2020-06-28' },
-            { id: 3, text: 'Sign up for online course', completed: false, dueDate: '', addedDate: '2020-06-28' },
-        ];
+        let todos = [];
+
+        fetch( "/api/todos/" ).then( r => r.json() ).then( r => {
+            todos = r?.data;
+            renderTodos();
+        } );
+
         let nextId = 4;
         let sortAsc = true;
         let editingId = null;
@@ -422,8 +424,6 @@
         document.getElementById( 'newTodoInput' ).addEventListener( 'keydown', e => {
             if ( e.key === 'Enter' ) addTodo();
         } );
-
-        renderTodos();
     </script>
 </body>
 
