@@ -263,6 +263,7 @@
             <input type="date" id="dueDatePicker" />
             <i class="bi bi-calendar3 calendar-icon" title="Pick due date"
                 onclick="document.getElementById('dueDatePicker').showPicker()"></i>
+            {% csrf_token %}
             <button class="btn btn-add" onclick="addTodo()">ADD</button>
         </div>
 
@@ -296,14 +297,19 @@
     <script>
         let todos = [];
 
-        fetch( "/api/todos/" ).then( r => r.json() ).then( r => {
-            todos = r?.data;
-            renderTodos();
-        } );
+
 
         let nextId = 4;
         let sortAsc = true;
         let editingId = null;
+
+        const reftechAndRefill = () => {
+            fetch( "/api/todos/", { method: "GET" } ).then( r => r.json() ).then( r => {
+                todos = r?.data;
+                renderTodos();
+            } );
+        }
+        reftechAndRefill();
 
         function formatDate( dateStr ) {
             if ( !dateStr ) return '';
@@ -326,13 +332,32 @@
             const dateInput = document.getElementById( 'dueDatePicker' );
             const text = input.value.trim();
             if ( !text ) return;
-            todos.push( {
+
+            // Do the api call and refetch data from be api
+
+            let data = {
                 id: nextId++,
                 text,
                 completed: false,
                 dueDate: dateInput.value,
-                addedDate: new Date().toISOString().split( 'T' )[0]
-            } );
+                addedDate: new Date().toISOString().split( 'T' )[0],
+                csrfmiddlewaretoken: "{{csrf_token}}"
+            }
+
+            const fd = new FormData();
+            Object.entries( data ).forEach( ( [k, v] ) => fd.append( k, v ) );
+
+            // data = JSON.stringify( data )
+            fetch( "/api/todos/add", {
+                method: "POST",
+                body: fd
+            } )
+                .then( r => r.json() )
+                .then( r => {
+                    console.log( r );
+                    reftechAndRefill();
+                } );
+
             input.value = '';
             dateInput.value = '';
             renderTodos();

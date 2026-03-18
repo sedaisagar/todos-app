@@ -22,6 +22,12 @@ def list_todos(request):
     #         { "id": 2, "text": 'Renew car insurance', "completed": False, "dueDate": '2020-06-28', "addedDate": '2020-06-28' },
     #         { "id": 3, "text": 'Sign up for online course', "completed": False, "dueDate": '', "addedDate": '2020-06-28' },
     #     ]
+    
+    print(f"""
+    =================================================
+                        {request.method}
+    =================================================
+    """)
 
     todos = Todos.objects.all().annotate(
         dueDate = F("due_date"),
@@ -33,3 +39,37 @@ def list_todos(request):
     response = JsonResponse({"data":list(todos)},safe=False)
     return response
 
+
+
+def add_todo(request):
+    print(f"""
+    =================================================
+                        {request.method}
+    =================================================
+    """)
+
+    if request.method == "POST":
+        # Represents post request
+        keys = ["text","completed","due_date"]
+
+        data = {}
+        for i in keys:
+            if i == "due_date":
+                data[i] = request.POST["dueDate"] or None
+            elif i == "completed":
+                data[i] = request.POST[i] == "true"
+            else:
+                data[i] = request.POST[i]
+        
+        # Data Is Ok
+        # Performing the insertion operation
+
+        Todos.objects.create(**data)
+
+        response = JsonResponse({"message":"Todo added successfully!"})
+    else:
+        # GET REQUEST
+        response = JsonResponse({"message":"Method not allowed!"})
+        response.status_code = 405
+
+    return response
