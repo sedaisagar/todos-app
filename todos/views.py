@@ -73,3 +73,24 @@ def add_todo(request):
         response.status_code = 405
 
     return response
+
+
+def remove_todo(request, pk):
+    # GET method
+
+    # todos = Todos.objects.filter(pk=pk) # Does not Throw exception 
+    try:
+        todo = Todos.objects.get(pk=pk) # Throws exception 
+        todo.delete() # Removes object from database
+        response = JsonResponse({"message":"Todo deleted successfully!"})
+    except Exception as e:
+        print(f"""
+        =====================================
+        {e.args}
+        =====================================
+        """)
+        response = JsonResponse({"message":"Todo not deleted successfully!"})
+        response.status_code = 400
+    
+    return response
+

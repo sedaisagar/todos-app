@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from todos.views import add_todo, home_page, list_todos, todos_page
+from todos.views import add_todo, home_page, list_todos, remove_todo, todos_page
 
 urlpatterns = [
     path("", home_page),
@@ -12,6 +12,7 @@ urlpatterns = [
             [
                 path("todos/", list_todos),
                 path("todos/add", add_todo),
+                path("todos/remove/<str:pk>", remove_todo),
             ]
         )
     ),

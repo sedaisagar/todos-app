@@ -364,8 +364,11 @@
         }
 
         function deleteTodo( id ) {
-            todos = todos.filter( t => t.id !== id );
-            renderTodos();
+            // todos = todos.filter( t => t.id !== id );
+            fetch( `/api/todos/remove/${id}` ).then( r => r.json() ).then( r => {
+                console.log( r );
+                reftechAndRefill();
+            } );
         }
 
         function toggleComplete( id ) {
