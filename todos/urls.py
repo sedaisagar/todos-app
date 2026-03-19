@@ -1,10 +1,11 @@
 from django.urls import path, include
 
-from todos.views import add_todo, edit_todo, home_page, list_todos, remove_todo, todos_page
+from todos.views import add_todo, edit_todo, home_page, list_todos, remove_todo, reviews_page, todos_page
 
 urlpatterns = [
     path("", home_page),
     path("todos/", todos_page),
+    path("reviews/", reviews_page),
     # 
     path(
         "api/", 

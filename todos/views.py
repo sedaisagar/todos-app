@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from todos import models
-from todos.models import Todos
+from todos.models import Reviews, Todos
 
 # Any Request, Template Response
 def home_page(request):
@@ -10,6 +10,10 @@ def home_page(request):
 
 def todos_page(request):
     return render(request=request,template_name="todos.html", context={})
+
+def reviews_page(request):
+    object_list = Reviews.objects.all()
+    return render(request=request,template_name="reviews.html", context={"reviews":object_list})
 
 # Any DATA REQ and RESP JSON
 
