@@ -74,6 +74,33 @@ def add_todo(request):
 
     return response
 
+def edit_todo(request, id):
+    print(f"""
+    =================================================
+                        {request.method}
+    =================================================
+    """)
+
+    if request.method == "POST":
+        # Represents post request
+        
+        data = {}
+
+        data["text"] = request.POST["text"]
+        
+        # Data Is Ok
+        # Performing the insertion operation
+
+        Todos.objects.filter(pk=id).update(**data) # ORM
+
+        response = JsonResponse({"message":"Todo updated successfully!"})
+    else:
+        # GET REQUEST
+        response = JsonResponse({"message":"Method not allowed!"})
+        response.status_code = 405
+
+    return response
+
 
 def remove_todo(request, pk):
     # GET method

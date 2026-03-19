@@ -297,8 +297,6 @@
     <script>
         let todos = [];
 
-
-
         let nextId = 4;
         let sortAsc = true;
         let editingId = null;
@@ -307,6 +305,13 @@
             fetch( "/api/todos/", { method: "GET" } ).then( r => r.json() ).then( r => {
                 todos = r?.data;
                 renderTodos();
+                Swal.fire( {
+                        position: "top-end",
+                        icon: "success",
+                        title: "Data Loaded Successfully!",
+                        showConfirmButton: false,
+                        timer: 1500
+                } );
             } );
         }
         reftechAndRefill();
@@ -356,6 +361,13 @@
                 .then( r => {
                     console.log( r );
                     reftechAndRefill();
+                    Swal.fire( {
+                        position: "top-end",
+                        icon: "success",
+                        title: r?.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    } );
                 } );
 
             input.value = '';
@@ -390,8 +402,30 @@
                 const t = todos.find( t => t.id === id );
                 if ( t ) t.text = input.value.trim() || t.text;
             }
-            editingId = null;
-            renderTodos();
+
+            const fd = new FormData();
+            fd.append( "text", input.value.trim() );
+            fd.append( "csrfmiddlewaretoken", "{{csrf_token}}" )
+
+            // data = JSON.stringify( data )
+            fetch( `/api/todos/update/${id}`, {
+                method: "POST",
+                body: fd
+            } )
+                .then( r => r.json() )
+                .then( r => {
+                    console.log( r );
+                    console.log( `Edited object id ${id}` );
+                    editingId = null;
+                    reftechAndRefill();
+                    Swal.fire( {
+                        position: "top-end",
+                        icon: "success",
+                        title: r?.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    } );
+                } );
         }
 
         function renderTodos() {
@@ -453,6 +487,7 @@
             if ( e.key === 'Enter' ) addTodo();
         } );
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>
