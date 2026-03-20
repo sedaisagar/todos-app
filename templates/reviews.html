@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container my-5 p-5">
-    <h1>Reviews Page</h1>
+    <div class="d-flex justify-content-between">
+        <h1>Reviews Page</h1>
+        <a href="/reviews/create/">Create Reviews</a>
+    </div>
     <!-- {{reviews}} -->
     <table class="table">
         <thead>
@@ -23,8 +26,14 @@
                 <td>{{i.review}}</td>
                 <td>{{i.rating}}</td>
                 <td>
-                    <a href="">Edit</a>
-                    <a href="">Delete</a>
+                    <a href="{% url 'reviews-edit-page' i.pk %}">Edit</a>
+                    <a href="{% url 'reviews-delete-page' i.pk %}">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">
+                    <p class="text-center">No data to display!</p>
                 </td>
             </tr>
             {% endfor %}

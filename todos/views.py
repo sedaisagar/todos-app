@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from todos import models
+from todos.forms import ReviewForm
 from todos.models import Reviews, Todos
 
 # Any Request, Template Response
@@ -10,10 +11,6 @@ def home_page(request):
 
 def todos_page(request):
     return render(request=request,template_name="todos.html", context={})
-
-def reviews_page(request):
-    object_list = Reviews.objects.all()
-    return render(request=request,template_name="reviews.html", context={"reviews":object_list})
 
 # Any DATA REQ and RESP JSON
 
@@ -125,3 +122,95 @@ def remove_todo(request, pk):
     
     return response
 
+
+# ===================================================
+#                   REVIEWS
+# ===================================================
+
+
+
+def reviews_page(request):
+    object_list = Reviews.objects.all()
+    return render(
+        request=request,
+        template_name="reviews.html", 
+        context={"reviews":object_list}
+    )
+
+
+def review_create_page(request):
+    if request.method == "GET":
+        form = ReviewForm()
+
+        return render(
+            request,
+            template_name="common-form.html",
+            context={"form":form},
+        )
+    else:
+        # POST
+
+        data = request.POST
+
+        form = ReviewForm(data=data) 
+
+        if form.is_valid():
+            super_cleaned_data = form.cleaned_data
+            review = Reviews.objects.create(**super_cleaned_data)
+            print(f"Review added >>>>>>>>> {review}")
+            return redirect("reviews-page") # This points redirection to url specified by reverse name 'reviews-page'
+
+
+def review_edit_page(request, pk):
+    try:
+        review = Reviews.objects.get(pk=pk) # Throws exception 
+    except Exception as e:
+        print(e.args)
+        return redirect("reviews-page")
+
+    if request.method == "GET":
+        data = dict(
+            name = review.name,
+            position = review.position,
+            review = review.review,
+            rating = review.rating,
+        )
+
+        form = ReviewForm(initial=data)
+
+        return render(
+            request,
+            template_name="common-form.html",
+            context={"form":form},
+        )
+    else:
+        # POST
+
+        data = request.POST
+
+        form = ReviewForm(data=data) 
+
+        if form.is_valid():
+            super_cleaned_data = form.cleaned_data
+            # review = Reviews.objects.create(**super_cleaned_data)
+            
+            review.name = super_cleaned_data.get("name") or review.name
+            review.position = super_cleaned_data.get("position") or review.position
+            review.review = super_cleaned_data.get("review") or review.review
+            review.rating = super_cleaned_data.get("rating") or review.rating
+
+            review.save()
+
+            print(f"Review Updated ")
+            return redirect("reviews-page") # This points redirection to url specified by reverse name 'reviews-page'
+
+
+def review_delete_page(request, pk):
+    try:
+        review = Reviews.objects.get(pk=pk) # Throws exception 
+        review.delete()
+        return redirect("reviews-page")
+
+    except Exception as e:
+        print(e.args)
+        return redirect("reviews-page")
